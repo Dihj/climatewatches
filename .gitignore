@@ -1,0 +1,10 @@
+data/
+.csv
+.nc
+
+__pycache__
+*.py[cod]
+build/
+dist/
+*.egg-info/
+../Process_packages.md

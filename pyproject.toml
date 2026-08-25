@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "climatewatches"
+version = "0.1.0"
+description = "Climate data monitoring and visualization"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    {name = "Climate Watches contributors"}
+]
+keywords = ["climate", "meteorology", "rainfall", "temperature", "cyclone"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+]
+dependencies = [
+    "basemap",
+    "cartopy",
+    "geopandas",
+    "geopy",
+    "matplotlib",
+    "numpy",
+    "pandas",
+    "rasterio",
+    "rioxarray",
+    "scipy",
+    "shapely",
+    "xarray",
+]
+
+[project.urls]
+Homepage = "https://github.com/ClimateWatches/climatewatches"
+Issues = "https://github.com/ClimateWatches/climatewatches/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["climatewatches*"]
