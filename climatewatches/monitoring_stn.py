@@ -171,6 +171,7 @@ def plot_stn_temp_monitoring(
     language="fr",
     clim_years=(1991, 2020),
     season_start_month=7,
+    season_year=None,
     include_recent=False,
     output_file=None,
     show=True,
@@ -179,7 +180,10 @@ def plot_stn_temp_monitoring(
     Plot daily Tmin/Tmax monitoring from a station CSV file.
 
     The station file must contain Date, Tmin, and Tmax columns. Seasons are
-    defined from July 1 to June 30 by default.
+    defined from July 1 to June 30 by default. If ``season_year`` is provided,
+    that year is used as the season start year; for example, ``2024`` covers
+    July 2024 through June 2025 when ``season_start_month=7``. If omitted, the
+    latest season in the data is used.
     """
 
     language = str(language).strip().lower()
@@ -224,10 +228,13 @@ def plot_stn_temp_monitoring(
     if pd.isna(last_date):
         raise ValueError("No valid Date values found in station file.")
 
-    if last_date.month < season_start_month:
-        current_season = last_date.year - 1
+    if season_year is None:
+        if last_date.month < season_start_month:
+            current_season = last_date.year - 1
+        else:
+            current_season = last_date.year
     else:
-        current_season = last_date.year
+        current_season = int(season_year)
 
     daily_tmin_seasonal = {}
     daily_tmax_seasonal = {}
@@ -452,6 +459,7 @@ def plot_stn_precip_monitoring(
     language="fr",
     clim_years=(1991, 2020),
     season_start_month=7,
+    season_year=None,
     include_recent=True,
     output_file=None,
     show=True,
@@ -460,7 +468,10 @@ def plot_stn_precip_monitoring(
     Plot daily and cumulative rainfall monitoring from a station CSV file.
 
     The station file must contain Date and Rainfall columns. Seasons are
-    defined from July 1 to June 30 by default.
+    defined from July 1 to June 30 by default. If ``season_year`` is provided,
+    that year is used as the season start year; for example, ``2024`` covers
+    July 2024 through June 2025 when ``season_start_month=7``. If omitted, the
+    latest season in the data is used.
     """
 
     language = str(language).strip().lower()
@@ -505,10 +516,13 @@ def plot_stn_precip_monitoring(
     if pd.isna(last_date):
         raise ValueError("No valid Date values found in station file.")
 
-    if last_date.month < season_start_month:
-        current_season = last_date.year - 1
+    if season_year is None:
+        if last_date.month < season_start_month:
+            current_season = last_date.year - 1
+        else:
+            current_season = last_date.year
     else:
-        current_season = last_date.year
+        current_season = int(season_year)
 
     accumulated_rainfall = {}
     daily_rainfall_seasonal = {}
