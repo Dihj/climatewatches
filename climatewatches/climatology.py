@@ -308,6 +308,7 @@ def _compute_seasonal_climatology(
 
 def _mask_raster_with_shape(data, gdf):
     data = normalize_lat_lon(data)
+    gdf = gdf.to_crs("EPSG:4326")
     data = data.rio.set_spatial_dims(
         x_dim="lon",
         y_dim="lat",
@@ -569,8 +570,13 @@ def plot_precip_climatology_map(
             f"{filename_part}_{language}.png"
         )
 
-    fig, ax = _plot_climatology_map(
+    clim_data_masked = _mask_raster_with_shape(
         clim_data,
+        districts,
+    )
+
+    fig, ax = _plot_climatology_map(
+        clim_data_masked,
         districts,
         lon,
         lat,
@@ -585,7 +591,8 @@ def plot_precip_climatology_map(
     return {
         "figure": fig,
         "axis": ax,
-        "data": clim_data,
+        "data": clim_data_masked,
+        "unmasked_data": clim_data,
         "output_file": output_file,
     }
 
@@ -659,8 +666,13 @@ def plot_temperature_climatology_map(
             f"{filename_part}_{language}.png"
         )
 
-    fig, ax = _plot_climatology_map(
+    clim_data_masked = _mask_raster_with_shape(
         clim_data,
+        districts,
+    )
+
+    fig, ax = _plot_climatology_map(
+        clim_data_masked,
         districts,
         lon,
         lat,
@@ -674,7 +686,8 @@ def plot_temperature_climatology_map(
     return {
         "figure": fig,
         "axis": ax,
-        "data": clim_data,
+        "data": clim_data_masked,
+        "unmasked_data": clim_data,
         "output_file": output_file,
     }
 
