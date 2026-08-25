@@ -48,7 +48,7 @@ season_months = {
     "NDJ": [11, 12, 1],
 }
 
-
+'''
 rainfall_colors = [
     "#f7fbff",
     "#deebf7",
@@ -65,7 +65,30 @@ cmap_clim = LinearSegmentedColormap.from_list(
     rainfall_colors,
     N=256,
 )
+'''
 
+coulPREC_colors = [
+    "#CB9362",
+    "#DABE90",
+    "#D2D179",
+    "#91D47D",
+    "#5CC247",
+    "#49A136",
+    "#287733",
+    "#2A7E61",
+    "#309181",
+    "#327295",
+    "#5B86C8",
+    "#9D8CD9",
+    "#CC79D2",
+    "#C24799",
+    "#7E2A73",
+]
+
+cmap_clim = LinearSegmentedColormap.from_list(
+    "clim_cmap",
+    coulPREC_colors,
+)
 
 temp_colors = [
     "#313695",
@@ -156,7 +179,7 @@ TRANSLATIONS = {
         "spatial_month_title": "Rotsakorana - Volana",
         "spatial_season_title": "Rotsakorana",
         "spatial_xlabel": "Taona",
-        "spatial_ylabel": "Fotambaran'ny Rotsakorana (mm)",
+        "spatial_ylabel": "Fitambaran'ny Rotsakorana (mm)",
         "below_normal": "Latsaky ny mahazatra",
         "normal": "Ara-dalàna",
         "above_normal": "Mihoatra ny mahazatra",
@@ -169,9 +192,9 @@ TRANSLATIONS = {
         "ombro_temp_line": "Salanisan'ny maripana (deg C)",
         "ombro_wet_area": "Rotsakorana > Maripana",
         "ombro_dry_area": "Maripana > Rotsakorana",
-        "composite_title": "Fiviliana mitambatra",
-        "composite_label_precip": "Fivilian'ny rotsakorana (mm)",
-        "composite_label_temp": "Fivilian'ny maripana (deg C)",
+        "composite_title": "Oharina amin'ny mahazatra",
+        "composite_label_precip": "Rotsakorana oharina amin'ny mahazatra (mm)",
+        "composite_label_temp": "Maripana oharina amin'ny mahazatra (deg C)",
         "csv_saved": "CSV voatahiry",
         "saved": "Vita sy voatahiry ny kisarisary",
     },

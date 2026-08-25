@@ -71,12 +71,12 @@ TRANSLATION = {
     "mg": {
         "cumulative_title": "Rotsakorana",
         "cumulative_label": "Rotsakorana (mm)",
-        "anomaly_title": "Tahan'ny fivilian'ny rotsakorana",
-        "anomaly_label": "Tahan'ny fivilian'ny rotsakorana (σ)",
+        "anomaly_title": "Tahan'ny fironan'ny rotsakorana",
+        "anomaly_label": "Tahan'ny fironan'ny rotsakorana (σ)",
         "temperature_title": "Maripana ankapobeny",
         "temperature_label": "Maripana ankapobeny",
-        "temperature_anomaly_title": "Tahan'ny fivilian'ny maripana",
-        "temperature_anomaly_label": "Tahan'ny fivilian'ny maripana (σ)",
+        "temperature_anomaly_title": "Tahan'ny fironan'ny maripana",
+        "temperature_anomaly_label": "Tahan'ny fironan'ny maripana (σ)",
     },
 }
 

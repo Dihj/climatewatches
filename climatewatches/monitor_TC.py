@@ -2,9 +2,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib.dates as mdates
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 
 from geopy.distance import geodesic
-from mpl_toolkits.basemap import Basemap
+from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
 
 TRANSLATIONS = {
@@ -55,9 +57,9 @@ TRANSLATIONS = {
         "saved": "Plot created and saved",
     },
     "mg": {
-        "title": "Lalan'ny rivodoza tropikaly",
+        "title": "Lalan'ny rivodoza",
         "local_time": "Ora eto an-toerana UTC",
-        "outside_basin": "Ivelan'ny faritra SI",
+        "outside_basin": "Ivelan'ny Bassin SI",
         "pt": "PT (< 50 km/h)",
         "dt": "DT (51-62 km/h)",
         "ttm": "TTM (63-88 km/h)",
@@ -67,15 +69,15 @@ TRANSLATIONS = {
         "ctti": "CTTI (> 212 km/h)",
         "date_axis": "Daty (UTC",
         "wind_axis": "Rivotra sy tafiotra (km/h)",
-        "gust_envelope": "Faritra tafiotra",
+        "gust_envelope": "Tafiotra",
         "sustained_wind": "Rivotra ambony indrindra (10 min)",
         "translation_speed_axis": "Hafainganam-pandeha (km/h)",
         "translation_speed": "Hafainganam-pandeha",
-        "temporal_title": "Fiovan'ny rivodoza tropikaly",
+        "temporal_title": "Fivoaran'ny Rivodoza",
         "temporal_subtitle": (
-            "Herin'ny rivotra sy hafainganam-pandeha"
+            "Herin'ny rivotra sy ny hafainganam-pandeha"
         ),
-        "season_title": "Rivodoza tropikaly misy fiantraikany amin'i Madagasikara",
+        "season_title": "Rivodoza tropikaly nisy fiantraikany eto Madagasikara",
         "saved": "Vita sy voatahiry ny kisarisary",
     },
 }
@@ -122,6 +124,130 @@ def _is_inside_bounds(lon, lat, bounds):
         bounds["lon_min"] <= lon <= bounds["lon_max"]
         and bounds["lat_min"] <= lat <= bounds["lat_max"]
     )
+
+
+def _validate_map_extent(map_extent):
+    required_keys = {
+        "lon_min",
+        "lon_max",
+        "lat_min",
+        "lat_max",
+    }
+    missing_keys = required_keys.difference(map_extent)
+
+    if missing_keys:
+        raise ValueError(
+            "map_extent is missing required key(s): "
+            f"{', '.join(sorted(missing_keys))}."
+        )
+
+    map_extent = {
+        key: float(map_extent[key])
+        for key in required_keys
+    }
+
+    if map_extent["lon_min"] >= map_extent["lon_max"]:
+        raise ValueError("map_extent lon_min must be smaller than lon_max.")
+
+    if map_extent["lat_min"] >= map_extent["lat_max"]:
+        raise ValueError("map_extent lat_min must be smaller than lat_max.")
+
+    return map_extent
+
+
+def _extent_from_track_data(data, padding=2.0):
+    lon_min = float(data["LON"].min())
+    lon_max = float(data["LON"].max())
+    lat_min = float(data["LAT"].min())
+    lat_max = float(data["LAT"].max())
+
+    if lon_min == lon_max:
+        lon_min -= padding
+        lon_max += padding
+    else:
+        lon_min -= padding
+        lon_max += padding
+
+    if lat_min == lat_max:
+        lat_min -= padding
+        lat_max += padding
+    else:
+        lat_min -= padding
+        lat_max += padding
+
+    return {
+        "lon_min": max(-180.0, lon_min),
+        "lon_max": min(180.0, lon_max),
+        "lat_min": max(-90.0, lat_min),
+        "lat_max": min(90.0, lat_max),
+    }
+
+
+def _setup_tc_map(fig, map_extent, meridian_step=5, parallel_step=5):
+    projection = ccrs.PlateCarree()
+    ax = fig.add_subplot(
+        111,
+        projection=projection,
+    )
+    ax.set_extent(
+        [
+            map_extent["lon_min"],
+            map_extent["lon_max"],
+            map_extent["lat_min"],
+            map_extent["lat_max"],
+        ],
+        crs=projection,
+    )
+    ax.stock_img()
+    ax.add_feature(
+        cfeature.LAND.with_scale("10m"),
+        facecolor="#f0f0e8",
+        edgecolor="none",
+        zorder=1,
+    )
+    ax.add_feature(
+        cfeature.OCEAN.with_scale("10m"),
+        facecolor="#d8edf7",
+        edgecolor="none",
+        zorder=0,
+    )
+    ax.coastlines(
+        resolution="10m",
+        linewidth=0.8,
+        color="#333333",
+        zorder=3,
+    )
+    ax.add_feature(
+        cfeature.BORDERS.with_scale("10m"),
+        linestyle=":",
+        linewidth=0.6,
+        edgecolor="#333333",
+        zorder=3,
+    )
+    gl = ax.gridlines(
+        crs=projection,
+        draw_labels=True,
+        linewidth=0.4,
+        color="gray",
+        alpha=0.55,
+        linestyle="--",
+        xlocs=range(
+            int(map_extent["lon_min"]),
+            int(map_extent["lon_max"]) + 1,
+            meridian_step,
+        ),
+        ylocs=range(
+            int(map_extent["lat_min"]),
+            int(map_extent["lat_max"]) + 1,
+            parallel_step,
+        ),
+    )
+    gl.top_labels = False
+    gl.right_labels = False
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
+
+    return ax, projection
 
 
 def _load_tc_data(file, timezone_offset):
@@ -177,6 +303,59 @@ def _load_tc_data(file, timezone_offset):
     )
 
 
+def _select_track_date_labels(
+    data,
+    mode="daily",
+    hour_step=6,
+):
+    mode = str(mode).strip().lower()
+
+    if mode in {
+        "none",
+        "off",
+        "false",
+    }:
+        return data.iloc[0:0]
+
+    if mode == "all":
+        return data
+
+    if mode in {
+        "hour",
+        "hourly",
+        "hours",
+    }:
+        hour_step = int(hour_step)
+
+        if hour_step <= 0:
+            raise ValueError("date_label_hour_step must be a positive integer.")
+
+        first_time = data["ISO_TIME"].iloc[0]
+        elapsed_hours = (
+            data["ISO_TIME"] - first_time
+        ).dt.total_seconds() / 3600.0
+        mask = elapsed_hours.mod(hour_step).abs() < 1e-6
+        selected = data.loc[mask]
+
+        if selected.empty:
+            selected = data.iloc[[0]]
+
+        return selected
+
+    if mode in {
+        "day",
+        "daily",
+        "date",
+    }:
+        return data.loc[
+            ~data["ISO_TIME"].dt.date.duplicated()
+        ]
+
+    raise ValueError(
+        "date_label_mode must be 'none', 'all', 'hourly', or 'daily'."
+    )
+
+
 def plot_track_tc(
     file,
     start_date,
@@ -186,6 +365,8 @@ def plot_track_tc(
     timezone_offset=3,
     map_extent=None,
     basin_bounds=None,
+    date_label_mode="daily",
+    date_label_hour_step=6,
     output_file=None,
     title=None,
     show=True,
@@ -195,27 +376,17 @@ def plot_track_tc(
 
     Expected columns are NAME, LON, LAT, Date, and Vent max km/h. Dates are
     parsed with the format ``%d/%m/%Y %H%M`` and converted to local time using
-    ``timezone_offset`` hours.
+    ``timezone_offset`` hours. If ``map_extent`` is omitted, the plotted domain
+    is computed from the selected track data. If ``map_extent`` is provided,
+    only track points and line segments inside that box are drawn. The
+    ``basin_bounds`` argument is retained as an optional additional clipping
+    domain for older workflows. Date labels can be controlled with
+    ``date_label_mode``: ``"daily"`` by default, ``"hourly"`` with
+    ``date_label_hour_step``, ``"all"``, or ``"none"``.
     """
 
     language = _validate_language(language)
     text = TRANSLATIONS[language]
-
-    if map_extent is None:
-        map_extent = {
-            "lat_min": -25,
-            "lat_max": -10,
-            "lon_min": 40,
-            "lon_max": 55,
-        }
-
-    if basin_bounds is None:
-        basin_bounds = {
-            "lon_min": 30,
-            "lon_max": 100,
-            "lat_min": -40,
-            "lat_max": 0,
-        }
 
     df = _load_tc_data(
         file,
@@ -241,32 +412,24 @@ def plot_track_tc(
     if filtered_df.empty:
         raise ValueError("No cyclone track data found for the selected period.")
 
+    if map_extent is None:
+        map_extent = _extent_from_track_data(filtered_df)
+    else:
+        map_extent = _validate_map_extent(map_extent)
+
+    if basin_bounds is not None:
+        basin_bounds = _validate_map_extent(basin_bounds)
+
+    plot_bounds = map_extent if basin_bounds is None else basin_bounds
+
     fig = plt.figure(
         figsize=(12, 10),
     )
-    ax = fig.add_subplot(111)
-
-    basemap = Basemap(
-        projection="cyl",
-        llcrnrlat=map_extent["lat_min"],
-        urcrnrlat=map_extent["lat_max"],
-        llcrnrlon=map_extent["lon_min"],
-        urcrnrlon=map_extent["lon_max"],
-        resolution="i",
-        area_thresh=1000,
-        ax=ax,
-    )
-
-    basemap.shadedrelief()
-    basemap.drawparallels(
-        range(-40, 1, 5),
-        labels=[1, 0, 0, 0],
-        linewidth=0.2,
-    )
-    basemap.drawmeridians(
-        range(30, 101, 5),
-        labels=[0, 0, 0, 1],
-        linewidth=0.2,
+    ax, data_crs = _setup_tc_map(
+        fig,
+        map_extent,
+        meridian_step=5,
+        parallel_step=5,
     )
 
     label_positions = []
@@ -286,72 +449,88 @@ def plot_track_tc(
         lons = cyclone_df["LON"].values
         winds = cyclone_df["WIND_INTENSITY_KMH"].values
 
-        enters_basin = any(
-            _is_inside_bounds(lon, lat, basin_bounds)
+        visible_points = [
+            _is_inside_bounds(lon, lat, plot_bounds)
             for lon, lat in zip(lons, lats)
-        )
+        ]
 
-        if not enters_basin:
+        if not any(visible_points):
             continue
 
-        starts_outside_basin = not _is_inside_bounds(
+        starts_outside_domain = not _is_inside_bounds(
             lons[0],
             lats[0],
-            basin_bounds,
+            plot_bounds,
         )
-        line_style = "--" if starts_outside_basin else "-"
+        line_style = "--" if starts_outside_domain else "-"
 
         for index in range(len(lats) - 1):
-            if _is_inside_bounds(
-                lons[index],
-                lats[index],
-                basin_bounds,
-            ):
-                basemap.plot(
+            if visible_points[index] and visible_points[index + 1]:
+                ax.plot(
                     [lons[index], lons[index + 1]],
                     [lats[index], lats[index + 1]],
                     color=_intensity_color(winds[index]),
                     linestyle=line_style,
                     linewidth=2,
-                    latlon=True,
+                    transform=data_crs,
+                    zorder=4,
                 )
-                basemap.scatter(
+        for index, is_visible in enumerate(visible_points):
+            if is_visible:
+                ax.scatter(
                     lons[index],
                     lats[index],
                     color=_intensity_color(winds[index]),
                     s=15,
-                    latlon=True,
+                    transform=data_crs,
                     zorder=3,
                 )
 
-        for _, row in cyclone_df.iterrows():
-            if row["ISO_TIME"].hour in [3, 15]:
-                x = row["LON"]
-                y = row["LAT"]
+        visible_label_rows = cyclone_df.loc[
+            [
+                _is_inside_bounds(lon, lat, plot_bounds)
+                for lon, lat in zip(cyclone_df["LON"], cyclone_df["LAT"])
+            ]
+        ]
 
-                if _is_inside_bounds(x, y, basin_bounds):
-                    time_str = row["ISO_TIME"].strftime("%d/%m %H:%M")
-                    ax.text(
-                        x + 0.2,
-                        y + 0.2,
-                        time_str,
-                        fontsize=7,
-                        fontweight="bold",
-                        bbox={
-                            "facecolor": "white",
-                            "alpha": 0.7,
-                            "edgecolor": "none",
-                            "pad": 1,
-                        },
-                        zorder=5,
-                    )
+        date_label_rows = _select_track_date_labels(
+            visible_label_rows,
+            mode=date_label_mode,
+            hour_step=date_label_hour_step,
+        )
 
-        if starts_outside_basin:
+        for _, row in date_label_rows.iterrows():
+            x = row["LON"]
+            y = row["LAT"]
+            time_format = (
+                "%d/%m"
+                if str(date_label_mode).strip().lower()
+                in {"day", "daily", "date"}
+                else "%d/%m %H:%M"
+            )
+            time_str = row["ISO_TIME"].strftime(time_format)
+            ax.text(
+                x + 0.2,
+                y + 0.2,
+                time_str,
+                fontsize=7,
+                fontweight="bold",
+                bbox={
+                    "facecolor": "white",
+                    "alpha": 0.65,
+                    "edgecolor": "none",
+                    "pad": 1,
+                },
+                transform=data_crs,
+                zorder=5,
+            )
+
+        if starts_outside_domain:
             entry_point_index = next(
                 (
                     index
                     for index, (lon, lat) in enumerate(zip(lons, lats))
-                    if _is_inside_bounds(lon, lat, basin_bounds)
+                    if _is_inside_bounds(lon, lat, plot_bounds)
                 ),
                 0,
             )
@@ -377,12 +556,13 @@ def plot_track_tc(
             fontweight="bold",
             ha="left",
             va="bottom",
-            color="red" if starts_outside_basin else "black",
+            color="red" if starts_outside_domain else "black",
             bbox={
                 "facecolor": "white",
                 "alpha": 0.8,
                 "edgecolor": "black",
             },
+            transform=data_crs,
             zorder=6,
         )
         label_positions.append(
@@ -394,7 +574,7 @@ def plot_track_tc(
         plotted_cyclones.append(cyclone)
 
     if not plotted_cyclones:
-        raise ValueError("No cyclone tracks enter the selected basin bounds.")
+        raise ValueError("No cyclone tracks enter the selected map extent.")
 
     legend_elements = [
         mlines.Line2D([], [], color="green", label=text["pt"]),
@@ -453,8 +633,9 @@ def plot_track_tc(
     return {
         "figure": fig,
         "axis": ax,
-        "basemap": basemap,
+        "crs": data_crs,
         "data": filtered_df,
+        "map_extent": map_extent,
         "plotted_cyclones": plotted_cyclones,
         "output_file": output_file,
     }
@@ -733,29 +914,15 @@ def plot_all_tc_season(
     """
     Plot all tropical cyclone tracks for a selected season or period.
 
-    Expected columns are NAME, LON, LAT, Date, and Vent max km/h. The default
-    map and basin bounds are configured for the southwestern Indian Ocean near
-    Madagascar.
+    Expected columns are NAME, LON, LAT, Date, and Vent max km/h. If
+    ``map_extent`` is omitted, the plotted domain is computed from all selected
+    tracks in the date period. If ``map_extent`` is provided, only track points
+    and line segments inside that box are drawn. The ``basin_bounds`` argument
+    is retained as an optional additional clipping domain for older workflows.
     """
 
     language = _validate_language(language)
     text = TRANSLATIONS[language]
-
-    if map_extent is None:
-        map_extent = {
-            "lat_min": -40,
-            "lat_max": -5,
-            "lon_min": 30,
-            "lon_max": 70,
-        }
-
-    if basin_bounds is None:
-        basin_bounds = {
-            "lon_min": 30,
-            "lon_max": 70,
-            "lat_min": -40,
-            "lat_max": -7,
-        }
 
     df = _load_tc_data(
         file,
@@ -773,32 +940,24 @@ def plot_all_tc_season(
     if filtered_df.empty:
         raise ValueError("No cyclone track data found for the selected period.")
 
+    if map_extent is None:
+        map_extent = _extent_from_track_data(filtered_df)
+    else:
+        map_extent = _validate_map_extent(map_extent)
+
+    if basin_bounds is not None:
+        basin_bounds = _validate_map_extent(basin_bounds)
+
+    plot_bounds = map_extent if basin_bounds is None else basin_bounds
+
     fig = plt.figure(
         figsize=(12, 10),
     )
-    ax = fig.add_subplot(111)
-
-    basemap = Basemap(
-        projection="cyl",
-        llcrnrlat=map_extent["lat_min"],
-        urcrnrlat=map_extent["lat_max"],
-        llcrnrlon=map_extent["lon_min"],
-        urcrnrlon=map_extent["lon_max"],
-        resolution="i",
-        area_thresh=1000,
-        ax=ax,
-    )
-
-    basemap.shadedrelief()
-    basemap.drawparallels(
-        range(-40, -6, 10),
-        labels=[1, 0, 0, 0],
-        linewidth=0.2,
-    )
-    basemap.drawmeridians(
-        range(30, 71, 10),
-        labels=[0, 0, 0, 1],
-        linewidth=0.2,
+    ax, data_crs = _setup_tc_map(
+        fig,
+        map_extent,
+        meridian_step=10,
+        parallel_step=10,
     )
 
     label_positions = []
@@ -818,50 +977,49 @@ def plot_all_tc_season(
         lons = cyclone_df["LON"].values
         winds = cyclone_df["WIND_INTENSITY_KMH"].values
 
-        enters_basin = any(
-            _is_inside_bounds(lon, lat, basin_bounds)
+        visible_points = [
+            _is_inside_bounds(lon, lat, plot_bounds)
             for lon, lat in zip(lons, lats)
-        )
+        ]
 
-        if not enters_basin:
+        if not any(visible_points):
             continue
 
-        starts_outside_basin = not _is_inside_bounds(
+        starts_outside_domain = not _is_inside_bounds(
             lons[0],
             lats[0],
-            basin_bounds,
+            plot_bounds,
         )
-        line_style = "--" if starts_outside_basin else "-"
+        line_style = "--" if starts_outside_domain else "-"
 
         for index in range(len(lats) - 1):
-            if _is_inside_bounds(
-                lons[index],
-                lats[index],
-                basin_bounds,
-            ):
-                basemap.plot(
+            if visible_points[index] and visible_points[index + 1]:
+                ax.plot(
                     [lons[index], lons[index + 1]],
                     [lats[index], lats[index + 1]],
                     color=_intensity_color(winds[index]),
                     linestyle=line_style,
                     linewidth=2,
-                    latlon=True,
+                    transform=data_crs,
+                    zorder=4,
                 )
-                basemap.scatter(
+        for index, is_visible in enumerate(visible_points):
+            if is_visible:
+                ax.scatter(
                     lons[index],
                     lats[index],
                     color=_intensity_color(winds[index]),
                     s=10,
-                    latlon=True,
+                    transform=data_crs,
                     zorder=3,
                 )
 
-        if starts_outside_basin:
+        if starts_outside_domain:
             entry_point_index = next(
                 (
                     index
                     for index, (lon, lat) in enumerate(zip(lons, lats))
-                    if _is_inside_bounds(lon, lat, basin_bounds)
+                    if _is_inside_bounds(lon, lat, plot_bounds)
                 ),
                 0,
             )
@@ -886,12 +1044,13 @@ def plot_all_tc_season(
             fontsize=8,
             ha="left",
             va="bottom",
-            color="red" if starts_outside_basin else "black",
+            color="red" if starts_outside_domain else "black",
             bbox={
                 "facecolor": "white",
                 "alpha": 0.5,
                 "edgecolor": "none",
             },
+            transform=data_crs,
             zorder=6,
         )
         label_positions.append(
@@ -903,7 +1062,7 @@ def plot_all_tc_season(
         plotted_cyclones.append(cyclone)
 
     if not plotted_cyclones:
-        raise ValueError("No cyclone tracks enter the selected basin bounds.")
+        raise ValueError("No cyclone tracks enter the selected map extent.")
 
     legend_elements = [
         mlines.Line2D([], [], color="green", label=text["pt"]),
@@ -953,8 +1112,9 @@ def plot_all_tc_season(
     return {
         "figure": fig,
         "axis": ax,
-        "basemap": basemap,
+        "crs": data_crs,
         "data": filtered_df,
+        "map_extent": map_extent,
         "plotted_cyclones": plotted_cyclones,
         "output_file": output_file,
     }

@@ -132,13 +132,13 @@ TRANSLATIONS = {
         "tmin_current": "Tmin vanim-potoana",
         "tmax_current": "Tmax vanim-potoana",
         "precip_title": (
-            "Fiovan'ny rotsakorana isan'andro sy mitambatra "
+            "Fiovan'ny rotsakorana isan'andro "
             "ampitahaina amin'ny mahazatra"
         ),
         "precip_cumulative_axis": "Rotsakorana (mm)",
         "precip_daily_axis": "Rotsakorana isan'andro (mm)",
-        "precip_climatology_range": "Elanelana",
-        "precip_climatology": "Toetrandro",
+        "precip_climatology_range": "Taha ambany/ambony indrindra",
+        "precip_climatology": "Mahazatra",
         "precip_season": "Vanim-potoana",
         "precip_daily_current": "Rotsakorana isan'andro",
         "monthly_title": "Maripana sy rotsakorana",

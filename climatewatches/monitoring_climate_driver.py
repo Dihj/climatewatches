@@ -56,15 +56,15 @@ TRANSLATIONS = {
         "saved": "Plot created and saved",
     },
     "mg": {
-        "temp_axis": "Fivilian'ny maripana (deg C)",
+        "temp_axis": "Maripana oharina amin'ny mahazatra (deg C)",
         "soi_axis": "Southern Oscillation Index (SOI)",
         "x_axis": "Taona",
-        "title": "Fiovan'ny mari-pamantarana klimatika",
+        "title": "Fironan'ny mpandrafitra ny toetrandro",
         "sst_map_colorbar": (
-            "Fivilian'ny TSM (deg C) raha oharina amin'ny mahazatra"
+            "Tahan'ny hafanan'ny ranomasina (deg C) raha oharina amin'ny mahazatra"
         ),
         "sst_map_title": (
-            "TSM\nFiviliana (loko) vs. salanisa TSM (tsipika)"
+            "Hafanan'ny ranomasina\nFironana (loko) vs. salanisa (tsipika)"
         ),
         "saved": "Vita sy voatahiry ny kisarisary",
     },

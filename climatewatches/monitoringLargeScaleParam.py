@@ -43,10 +43,10 @@ TRANSLATIONS = {
         "saved": "Plot created and saved",
     },
     "mg": {
-        "colorbar": "Fivilian'ny hafanan'ny ranomasina ambonin'ny tany (deg C)",
-        "title": "TSM (tsipika) sy fivilian'ny TSM (loko)",
-        "mslp_colorbar": "Fivilian'ny MSLP (hPa)",
-        "mslp_title": "MSLP (tsipika) sy fivilian'ny MSLP (loko)",
+        "colorbar": "Fironan'ny hafanan'ny ranomasina (deg C)",
+        "title": "TSM (tsipika) sy fironan'ny TSM (loko)",
+        "mslp_colorbar": "Fironan'ny MSLP (hPa)",
+        "mslp_title": "MSLP (tsipika) sy fironan'ny MSLP (loko)",
         "saved": "Vita sy voatahiry ny kisarisary",
     },
 }

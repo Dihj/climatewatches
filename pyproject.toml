@@ -19,11 +19,11 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Atmospheric Science",
 ]
 dependencies = [
-    "basemap",
     "cartopy",
     "geopandas",
     "geopy",
     "matplotlib",
+    "netCDF4",
     "numpy",
     "pandas",
     "rasterio",

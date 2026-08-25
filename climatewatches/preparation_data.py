@@ -130,9 +130,9 @@ def apply_scientific_plot_style():
     plt.rcParams.update({
         "font.family": "serif",
         "font.serif": [
-            "Times New Roman",
-            "Times",
             "DejaVu Serif",
+            "Liberation Serif",
+            "serif",
         ],
         "axes.titleweight": "bold",
         "axes.labelsize": 12,
@@ -151,7 +151,7 @@ def set_scientific_title(ax, title, fontsize=14, pad=12):
         title,
         fontsize=fontsize,
         weight="bold",
-        fontfamily="Times New Roman",
+        fontfamily="DejaVu Serif",
         pad=pad,
     )
 
@@ -169,11 +169,11 @@ def style_scientific_grid(ax):
 def style_cartopy_gridlines(gl):
     gl.xlabel_style = {
         "size": 10,
-        "family": "Times New Roman",
+        "family": "DejaVu Serif",
     }
     gl.ylabel_style = {
         "size": 10,
-        "family": "Times New Roman",
+        "family": "DejaVu Serif",
     }
     return gl
 
