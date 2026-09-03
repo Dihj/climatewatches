@@ -1,3 +1,5 @@
+"""Disaster impact analysis."""
+
 from pathlib import Path
 
 import pandas as pd
@@ -56,7 +58,7 @@ def disaster_impact(
     show=True,
 ):
     """
-    Plot disaster impacts by subgroup, type, or subtype using EMDAT-style data.
+    Plot disaster impacts by subgroup, type, or subtype using EMDAT data.
 
     Parameters
     ----------

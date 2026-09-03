@@ -1,4 +1,5 @@
-# Python script to monitor interannual variability for station data
+"""Interannual variability plots for station data."""
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,15 +7,15 @@ from matplotlib.ticker import FuncFormatter
 
 try:
     from .preparation_data import (
-        apply_scientific_plot_style,
-        set_scientific_title,
-        style_scientific_grid,
+        set_grid,
+        set_plot_defaults,
+        set_title,
     )
 except ImportError:
     from preparation_data import (
-        apply_scientific_plot_style,
-        set_scientific_title,
-        style_scientific_grid,
+        set_grid,
+        set_plot_defaults,
+        set_title,
     )
 
 ## Translations: 
@@ -101,7 +102,6 @@ Date,Tmin,Tmax,Rainfall,Tmean
 
 def read_stn_data(file):
     missing_val = [-999, -99.9, -99, 'NA', 'N/A', '', 'missing']
-    url = file
     data = pd.read_csv(file, parse_dates=['Date'], na_values=missing_val)
     df = data.copy()
     df['Month'] = df['Date'].dt.month
@@ -142,7 +142,7 @@ def plot_precip_interannual_variability(
         )
 
     text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
+    set_plot_defaults()
 
     df = read_stn_data(file)
     
@@ -249,12 +249,12 @@ def plot_precip_interannual_variability(
     ax1.yaxis.set_major_formatter(FuncFormatter(lambda x, _: f"{x:+.1f} mm"))
     #ax1.set_xlabel('Annee', fontsize=13)
     ax1.set_xlabel(text['year'], fontsize=13)
-    set_scientific_title(
+    set_title(
         ax1,
         f"{plot_title}",
         fontsize=15,
     )
-    style_scientific_grid(ax1)
+    set_grid(ax1)
     ax1.tick_params(
         axis="both",
         which="both",
@@ -307,7 +307,7 @@ def plot_temp_interannual_variability(
         )
 
     text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
+    set_plot_defaults()
 
     df = read_stn_data(file)
     
@@ -413,12 +413,12 @@ def plot_temp_interannual_variability(
     ax1.yaxis.set_major_formatter(FuncFormatter(lambda x, _: f"{x:+.1f} °C"))
     #ax1.set_xlabel('Annee', fontsize=13)
     ax1.set_xlabel(text['year'], fontsize=13)
-    set_scientific_title(
+    set_title(
         ax1,
         f"{plot_title}",
         fontsize=15,
     )
-    style_scientific_grid(ax1)
+    set_grid(ax1)
     ax1.tick_params(
         axis="both",
         which="both",

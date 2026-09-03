@@ -12,19 +12,19 @@ from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
 try:
     from .preparation_data import (
-        apply_scientific_plot_style,
+        set_plot_defaults,
         normalize_lat_lon,
         resolve_variable,
-        set_scientific_title,
-        style_cartopy_gridlines,
+        set_map_grid,
+        set_title,
     )
 except ImportError:
     from preparation_data import (
-        apply_scientific_plot_style,
+        set_plot_defaults,
         normalize_lat_lon,
         resolve_variable,
-        set_scientific_title,
-        style_cartopy_gridlines,
+        set_map_grid,
+        set_title,
     )
 
 
@@ -299,7 +299,7 @@ def plot_climate_indices(
 
     language = _validate_language(language)
     text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
+    set_plot_defaults()
 
     if include_soi and soi_file is None:
         raise ValueError("soi_file is required when include_soi=True.")
@@ -528,7 +528,7 @@ def plot_climate_indices(
         length=2,
     )
 
-    line_styles = {
+    line_settings = {
         "RONI": {
             "color": "#004488",
             "linewidth": 2.0,
@@ -570,11 +570,11 @@ def plot_climate_indices(
         if key not in indices:
             continue
 
-        style = line_styles[key]
+        settings = line_settings[key]
         line, = ax1.plot(
             indices[key]["time"],
             indices[key].values,
-            **style,
+            **settings,
         )
         line_handles.append(line)
 
@@ -633,7 +633,7 @@ def plot_climate_indices(
     )
 
     selected_names = ", ".join(indices.keys())
-    set_scientific_title(
+    set_title(
         ax1,
         f"{text['title']}: {selected_names}",
         fontsize=13,
@@ -714,7 +714,7 @@ def plot_sst_map_variability(
 
     language = _validate_language(language)
     text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
+    set_plot_defaults()
 
     if months_of_interest is None:
         start_ts = pd.Timestamp(target_start)
@@ -749,7 +749,7 @@ def plot_sst_map_variability(
                     10,
                 ),
                 "color": "#000000",
-                "style": "-",
+                "line_pattern": "-",
             },
             "WTIO (IOD)": {
                 "coords": (
@@ -759,7 +759,7 @@ def plot_sst_map_variability(
                     20,
                 ),
                 "color": "#117733",
-                "style": "--",
+                "line_pattern": "--",
             },
             "SETIO (IOD)": {
                 "coords": (
@@ -769,7 +769,7 @@ def plot_sst_map_variability(
                     10,
                 ),
                 "color": "#117733",
-                "style": "--",
+                "line_pattern": "--",
             },
             "WSIO (SIOD)": {
                 "coords": (
@@ -779,7 +779,7 @@ def plot_sst_map_variability(
                     10,
                 ),
                 "color": "#AA4499",
-                "style": "-.",
+                "line_pattern": "-.",
             },
             "ESIO (SIOD)": {
                 "coords": (
@@ -789,7 +789,7 @@ def plot_sst_map_variability(
                     10,
                 ),
                 "color": "#AA4499",
-                "style": "-.",
+                "line_pattern": "-.",
             },
         }
 
@@ -943,7 +943,7 @@ def plot_sst_map_variability(
             linewidth=1.5,
             edgecolor=info["color"],
             facecolor="none",
-            linestyle=info["style"],
+            linestyle=info["line_pattern"],
             transform=ccrs.PlateCarree(),
             zorder=3,
         )
@@ -977,7 +977,7 @@ def plot_sst_map_variability(
     gl.right_labels = False
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
-    style_cartopy_gridlines(gl)
+    set_map_grid(gl)
 
     cbar = plt.colorbar(
         mesh,
@@ -994,7 +994,7 @@ def plot_sst_map_variability(
         labelsize=9,
     )
 
-    set_scientific_title(
+    set_title(
         ax,
         (
             f"{target_start[:7]} - {target_end[:7]}\n"

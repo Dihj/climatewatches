@@ -6,30 +6,30 @@ import matplotlib.gridspec as gridspec
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import geopandas as gpd
-import rioxarray
+import rioxarray  # noqa: F401 - registers the xarray ``.rio`` accessor
 
 from matplotlib.colors import LinearSegmentedColormap
 from shapely.geometry import mapping
 
 try:
     from .preparation_data import (
-        apply_scientific_plot_style,
+        set_plot_defaults,
         is_precip_variable,
         normalize_lat_lon,
         resolve_variable,
-        set_scientific_title,
-        style_cartopy_gridlines,
-        style_scientific_grid,
+        set_grid,
+        set_map_grid,
+        set_title,
     )
 except ImportError:
     from preparation_data import (
-        apply_scientific_plot_style,
+        set_plot_defaults,
         is_precip_variable,
         normalize_lat_lon,
         resolve_variable,
-        set_scientific_title,
-        style_cartopy_gridlines,
-        style_scientific_grid,
+        set_grid,
+        set_map_grid,
+        set_title,
     )
 
 
@@ -410,7 +410,7 @@ def _plot_climatology_map(
     levels=None,
     show=True,
 ):
-    apply_scientific_plot_style()
+    set_plot_defaults()
 
     fig, ax = plt.subplots(
         figsize=(8, 6),
@@ -419,7 +419,7 @@ def _plot_climatology_map(
         },
     )
 
-    set_scientific_title(
+    set_title(
         ax,
         title,
         fontsize=14,
@@ -475,7 +475,7 @@ def _plot_climatology_map(
     )
     gl.top_labels = False
     gl.right_labels = False
-    style_cartopy_gridlines(gl)
+    set_map_grid(gl)
 
     cbar = plt.colorbar(
         pcm,
@@ -521,7 +521,7 @@ def plot_precip_climatology_map(
 
     language = _validate_language(language)
     text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
+    set_plot_defaults()
 
     ds = normalize_lat_lon(xr.open_dataset(file))
     rainfall = ds[resolve_variable(ds, "precip")]
@@ -617,7 +617,7 @@ def plot_temperature_climatology_map(
 
     language = _validate_language(language)
     text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
+    set_plot_defaults()
 
     ds = normalize_lat_lon(xr.open_dataset(file))
     temperature = ds[resolve_variable(ds, "temperature")]
@@ -712,7 +712,7 @@ def plot_climatology_spatial_mean(
 
     language = _validate_language(language)
     text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
+    set_plot_defaults()
 
     ds = normalize_lat_lon(xr.open_dataset(file))
     rainfall = ds[resolve_variable(ds, "precip")]
@@ -854,7 +854,7 @@ def plot_climatology_spatial_mean(
             label=f"{selected_year}",
         )
 
-    set_scientific_title(
+    set_title(
         ax,
         title,
         fontsize=14,
@@ -872,7 +872,7 @@ def plot_climatology_spatial_mean(
         loc="upper left",
         frameon=True,
     )
-    style_scientific_grid(ax)
+    set_grid(ax)
 
     plt.tight_layout()
 
@@ -915,7 +915,7 @@ def plot_diagram_ombro_one_point(
     show=True,
 ):
     """
-    Plot a Walter-Lieth style ombrothermic diagram for one grid point.
+    Plot a Walter-Lieth ombrothermic diagram for one grid point.
 
     Rainfall and temperature are extracted from the nearest NetCDF grid point.
     Rainfall above 100 mm is compressed by a factor of 5 on the rainfall axis.
@@ -923,7 +923,7 @@ def plot_diagram_ombro_one_point(
 
     language = _validate_language(language)
     text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
+    set_plot_defaults()
 
     def compress_rain(value):
         if value <= 100:
@@ -1184,7 +1184,7 @@ def plot_diagram_ombro_one_point(
         labelcolor="tab:blue",
     )
 
-    set_scientific_title(
+    set_title(
         ax,
         (
             f"{text['ombro_title']}\n"
@@ -1218,7 +1218,7 @@ def plot_diagram_ombro_one_point(
         va="top",
     )
 
-    style_scientific_grid(ax)
+    set_grid(ax)
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(
         handles,
@@ -1280,7 +1280,7 @@ def plot_composite_map(
 
     language = _validate_language(language)
     text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
+    set_plot_defaults()
 
     ds = normalize_lat_lon(xr.open_dataset(file))
     districts = gpd.read_file(shapefile).to_crs(
@@ -1491,7 +1491,7 @@ def plot_composite_map(
         anomaly_year = anomalies_selected.sel(
             year=year
         )
-        pcm_small = ax_small.contourf(
+        ax_small.contourf(
             lon,
             lat,
             anomaly_year,
@@ -1507,8 +1507,8 @@ def plot_composite_map(
             alpha=0.6,
             linestyle="--",
         )
-        style_cartopy_gridlines(gl_small)
-        set_scientific_title(
+        set_map_grid(gl_small)
+        set_title(
             ax_small,
             f"{year}",
             fontsize=9,
@@ -1554,9 +1554,9 @@ def plot_composite_map(
     )
     gl.top_labels = False
     gl.right_labels = False
-    style_cartopy_gridlines(gl)
+    set_map_grid(gl)
 
-    set_scientific_title(
+    set_title(
         ax_main,
         (
             f"{text['composite_title']} ({label_part}) - "

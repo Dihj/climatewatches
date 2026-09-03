@@ -120,10 +120,8 @@ def is_precip_variable(variable):
     return str(variable).lower() in VARIABLE_ALIASES["precip"]
 
 
-def apply_scientific_plot_style():
-    """
-    Apply a consistent scientific plotting style.
-    """
+def set_plot_defaults():
+    """Apply the default plot settings."""
 
     import matplotlib.pyplot as plt
 
@@ -146,7 +144,7 @@ def apply_scientific_plot_style():
     })
 
 
-def set_scientific_title(ax, title, fontsize=14, pad=12):
+def set_title(ax, title, fontsize=14, pad=12):
     ax.set_title(
         title,
         fontsize=fontsize,
@@ -156,7 +154,7 @@ def set_scientific_title(ax, title, fontsize=14, pad=12):
     )
 
 
-def style_scientific_grid(ax):
+def set_grid(ax):
     ax.grid(
         True,
         which="major",
@@ -166,7 +164,7 @@ def style_scientific_grid(ax):
     )
 
 
-def style_cartopy_gridlines(gl):
+def set_map_grid(gl):
     gl.xlabel_style = {
         "size": 10,
         "family": "DejaVu Serif",
@@ -252,7 +250,7 @@ def blend_stn_cdt_data(
     output_file="merged_daily_data.csv",
 ):
     """
-    Merge CDT-style rainfall, Tmin, and Tmax station files by date.
+    Merge CDT rainfall, Tmin, and Tmax station files by date.
 
     Each input file is expected to use this format:
 

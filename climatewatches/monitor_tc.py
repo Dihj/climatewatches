@@ -1,3 +1,5 @@
+"""Tropical cyclone monitoring."""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
@@ -462,7 +464,7 @@ def plot_track_tc(
             lats[0],
             plot_bounds,
         )
-        line_style = "--" if starts_outside_domain else "-"
+        line_pattern = "--" if starts_outside_domain else "-"
 
         for index in range(len(lats) - 1):
             if visible_points[index] and visible_points[index + 1]:
@@ -470,7 +472,7 @@ def plot_track_tc(
                     [lons[index], lons[index + 1]],
                     [lats[index], lats[index + 1]],
                     color=_intensity_color(winds[index]),
-                    linestyle=line_style,
+                    linestyle=line_pattern,
                     linewidth=2,
                     transform=data_crs,
                     zorder=4,
@@ -990,7 +992,7 @@ def plot_all_tc_season(
             lats[0],
             plot_bounds,
         )
-        line_style = "--" if starts_outside_domain else "-"
+        line_pattern = "--" if starts_outside_domain else "-"
 
         for index in range(len(lats) - 1):
             if visible_points[index] and visible_points[index + 1]:
@@ -998,7 +1000,7 @@ def plot_all_tc_season(
                     [lons[index], lons[index + 1]],
                     [lats[index], lats[index + 1]],
                     color=_intensity_color(winds[index]),
-                    linestyle=line_style,
+                    linestyle=line_pattern,
                     linewidth=2,
                     transform=data_crs,
                     zorder=4,

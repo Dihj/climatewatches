@@ -36,7 +36,7 @@ DEFAULT_HAZARD_ICONS = {
     "rockfall (dry)": "RF",
 }
 
-DEFAULT_HAZARD_STYLES = {
+DEFAULT_HAZARD_FORMATS = {
     "drought": {"marker": "*", "color": "#ca8a04"},
     "storm": {"marker": "o", "color": "#2563eb"},
     "tropical cyclone": {"marker": "o", "color": "#2563eb"},
@@ -144,14 +144,14 @@ def _wrap_label(value, width):
     )
 
 
-def _hazard_style(row):
+def _hazard_format(row):
     for column in ("Disaster Subtype", "Disaster Type", "Disaster Subgroup"):
         value = row.get(column)
         if pd.isna(value):
             continue
-        style = DEFAULT_HAZARD_STYLES.get(str(value).strip().lower())
-        if style:
-            return style
+        settings = DEFAULT_HAZARD_FORMATS.get(str(value).strip().lower())
+        if settings:
+            return settings
     return {"marker": "D", "color": "#7f1d1d"}
 
 
@@ -384,13 +384,13 @@ def plot_disaster_impact(
 
         # Draw icon
         if icon_image is None:
-            hazard_style = _hazard_style(row)
+            hazard_format = _hazard_format(row)
             ax1.scatter(
                 [event_date],
                 [icon_y],
-                marker=hazard_style["marker"],
+                marker=hazard_format["marker"],
                 s=90,
-                color=hazard_style["color"],
+                color=hazard_format["color"],
                 edgecolor="white",
                 zorder=10,
             )
@@ -441,4 +441,3 @@ def plot_disaster_impact(
         plt.close(fig)
 
     return merged_df, annotated_events
-

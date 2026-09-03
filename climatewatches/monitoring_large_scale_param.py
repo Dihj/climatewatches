@@ -1,3 +1,5 @@
+"""Large-scale climate parameter monitoring."""
+
 import xarray as xr
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
@@ -8,19 +10,19 @@ from matplotlib.colors import TwoSlopeNorm
 
 try:
     from .preparation_data import (
-        apply_scientific_plot_style,
+        set_plot_defaults,
         normalize_lat_lon,
         resolve_variable,
-        set_scientific_title,
-        style_cartopy_gridlines,
+        set_map_grid,
+        set_title,
     )
 except ImportError:
     from preparation_data import (
-        apply_scientific_plot_style,
+        set_plot_defaults,
         normalize_lat_lon,
         resolve_variable,
-        set_scientific_title,
-        style_cartopy_gridlines,
+        set_map_grid,
+        set_title,
     )
 
 
@@ -105,7 +107,7 @@ def plot_map_latest_sst(
 
     language = _validate_language(language)
     text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
+    set_plot_defaults()
 
     if domain_box is None:
         domain_box = [
@@ -235,7 +237,7 @@ def plot_map_latest_sst(
     )
     gl.top_labels = False
     gl.right_labels = False
-    style_cartopy_gridlines(gl)
+    set_map_grid(gl)
 
     cbar = plt.colorbar(
         cf,
@@ -262,7 +264,7 @@ def plot_map_latest_sst(
     else:
         selected_time = time
 
-    set_scientific_title(
+    set_title(
         ax,
         f"{text['title']} - {selected_time}",
         fontsize=12,
@@ -332,7 +334,7 @@ def plot_map_latest_mslp(
 
     language = _validate_language(language)
     text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
+    set_plot_defaults()
 
     if domain_box is None:
         domain_box = [
@@ -451,7 +453,7 @@ def plot_map_latest_mslp(
     )
     gl.top_labels = False
     gl.right_labels = False
-    style_cartopy_gridlines(gl)
+    set_map_grid(gl)
 
     cbar = plt.colorbar(
         cf,
@@ -481,7 +483,7 @@ def plot_map_latest_mslp(
     else:
         selected_time = time
 
-    set_scientific_title(
+    set_title(
         ax,
         f"{text['mslp_title']} - {selected_time}",
         fontsize=12,

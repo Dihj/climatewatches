@@ -10,15 +10,15 @@ from scipy.stats import zscore
 
 try:
     from .preparation_data import (
-        apply_scientific_plot_style,
-        set_scientific_title,
-        style_scientific_grid,
+        set_grid,
+        set_plot_defaults,
+        set_title,
     )
 except ImportError:
     from preparation_data import (
-        apply_scientific_plot_style,
-        set_scientific_title,
-        style_scientific_grid,
+        set_grid,
+        set_plot_defaults,
+        set_title,
     )
 
 
@@ -166,6 +166,40 @@ TRANSLATIONS = {
 }
 
 
+MISSING_VALUES = [-999, -99.9, -99, "NA", "N/A", "", "missing"]
+
+
+def _get_translation(language):
+    """Normalize a language code and return its station-plot translations."""
+
+    language = str(language).strip().lower()
+    if language not in TRANSLATIONS:
+        raise ValueError(
+            f"Unsupported language {language!r}. "
+            "Choose 'fr', 'en', 'mg'."
+        )
+
+    return language, TRANSLATIONS[language]
+
+
+def _read_station_data(file, required_columns, *, parse_dates=False):
+    """Read station data and enforce the columns required by a plot."""
+
+    kwargs = {"na_values": MISSING_VALUES}
+    if parse_dates:
+        kwargs["parse_dates"] = ["Date"]
+
+    data = pd.read_csv(file, **kwargs)
+    missing_columns = set(required_columns).difference(data.columns)
+    if missing_columns:
+        raise ValueError(
+            "Missing required station column(s): "
+            f"{', '.join(sorted(missing_columns))}"
+        )
+
+    return data
+
+
 def plot_stn_temp_monitoring(
     file,
     language="fr",
@@ -186,32 +220,13 @@ def plot_stn_temp_monitoring(
     latest season in the data is used.
     """
 
-    language = str(language).strip().lower()
-
-    if language not in TRANSLATIONS:
-        raise ValueError(
-            f"Unsupported language {language!r}. "
-            "Choose 'fr', 'en', 'mg'."
-        )
-
-    text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
-    missing_values = [-999, -99.9, -99, "NA", "N/A", "", "missing"]
-
-    df = pd.read_csv(
+    language, text = _get_translation(language)
+    set_plot_defaults()
+    df = _read_station_data(
         file,
-        parse_dates=["Date"],
-        na_values=missing_values,
+        {"Date", "Tmin", "Tmax"},
+        parse_dates=True,
     )
-
-    required_columns = {"Date", "Tmin", "Tmax"}
-    missing_columns = required_columns.difference(df.columns)
-
-    if missing_columns:
-        raise ValueError(
-            "Missing required station column(s): "
-            f"{', '.join(sorted(missing_columns))}"
-        )
 
     df = df.copy()
     df["Year"] = df["Date"].dt.year
@@ -391,7 +406,7 @@ def plot_stn_temp_monitoring(
         ),
     )
 
-    set_scientific_title(
+    set_title(
         ax,
         f"{text['title']} {clim_years[0]}-{clim_years[1]}",
         fontsize=16,
@@ -413,7 +428,7 @@ def plot_stn_temp_monitoring(
     )
 
     ax.legend(loc="lower center", fontsize=10)
-    style_scientific_grid(ax)
+    set_grid(ax)
     ax.tick_params(
         axis="both",
         which="both",
@@ -474,32 +489,13 @@ def plot_stn_precip_monitoring(
     latest season in the data is used.
     """
 
-    language = str(language).strip().lower()
-
-    if language not in TRANSLATIONS:
-        raise ValueError(
-            f"Unsupported language {language!r}. "
-            "Choose 'fr', 'en', 'mg'."
-        )
-
-    text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
-    missing_values = [-999, -99.9, -99, "NA", "N/A", "", "missing"]
-
-    df = pd.read_csv(
+    language, text = _get_translation(language)
+    set_plot_defaults()
+    df = _read_station_data(
         file,
-        parse_dates=["Date"],
-        na_values=missing_values,
+        {"Date", "Rainfall"},
+        parse_dates=True,
     )
-
-    required_columns = {"Date", "Rainfall"}
-    missing_columns = required_columns.difference(df.columns)
-
-    if missing_columns:
-        raise ValueError(
-            "Missing required station column(s): "
-            f"{', '.join(sorted(missing_columns))}"
-        )
 
     df = df.copy()
     df["Year"] = df["Date"].dt.year
@@ -673,7 +669,7 @@ def plot_stn_precip_monitoring(
 
         ax2.set_ylim(0, daily_ylim)
 
-    set_scientific_title(
+    set_title(
         ax1,
         f"{text['precip_title']} {clim_years[0]}-{clim_years[1]}",
         fontsize=16,
@@ -704,7 +700,7 @@ def plot_stn_precip_monitoring(
         loc="upper left",
     )
 
-    style_scientific_grid(ax1)
+    set_grid(ax1)
     ax1.tick_params(
         axis="both",
         which="both",
@@ -765,34 +761,15 @@ def plot_stn_monthly_monitoring(
     The station file must contain Date, Tmin, Tmax, and Rainfall columns.
     """
 
-    language = str(language).strip().lower()
-
-    if language not in TRANSLATIONS:
-        raise ValueError(
-            f"Unsupported language {language!r}. "
-            "Choose 'fr', 'en', 'mg'."
-        )
-
-    text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
+    language, text = _get_translation(language)
+    set_plot_defaults()
     selected_month = int(selected_month)
     selected_year = int(selected_year)
-    missing_values = [-999, -99.9, -99, "NA", "N/A", "", "missing"]
-
-    station_data = pd.read_csv(
+    station_data = _read_station_data(
         file,
-        parse_dates=["Date"],
-        na_values=missing_values,
+        {"Date", "Tmax", "Tmin", "Rainfall"},
+        parse_dates=True,
     )
-
-    required_columns = {"Date", "Tmax", "Tmin", "Rainfall"}
-    missing_columns = required_columns.difference(station_data.columns)
-
-    if missing_columns:
-        raise ValueError(
-            "Missing required station column(s): "
-            f"{', '.join(sorted(missing_columns))}"
-        )
 
     station_data = station_data.copy()
 
@@ -915,7 +892,7 @@ def plot_stn_monthly_monitoring(
 
     month_name = station_data_selected["Date"].dt.strftime("%B").iloc[0]
 
-    set_scientific_title(
+    set_title(
         ax1,
         f"{text['monthly_title']} - {month_name} {selected_year}",
         fontsize=14,
@@ -927,7 +904,7 @@ def plot_stn_monthly_monitoring(
     ax1.xaxis.set_major_locator(
         mdates.DayLocator(interval=5)
     )
-    style_scientific_grid(ax1)
+    set_grid(ax1)
     ax1.grid(
         False,
         which="minor",
@@ -995,13 +972,7 @@ def plot_monthly_interannual_variability(
     anomaly over the ONDJFMA rainy season.
     """
 
-    language = str(language).strip().lower()
-
-    if language not in TRANSLATIONS:
-        raise ValueError(
-            f"Unsupported language {language!r}. "
-            "Choose 'fr', 'en', 'mg'."
-        )
+    language, text = _get_translation(language)
 
     if season_dict is None:
         season_dict = {
@@ -1016,27 +987,12 @@ def plot_monthly_interannual_variability(
             ],
         }
 
-    text = TRANSLATIONS[language]
-    apply_scientific_plot_style()
+    set_plot_defaults()
     season_name = str(season_name).strip().upper()
-    missing_values = [-999, -99.9, -99, "NA", "N/A", "", "missing"]
-
-    df = pd.read_csv(
+    df = _read_station_data(
         file,
-        na_values=missing_values,
+        {"Date", zone},
     )
-
-    required_columns = {
-        "Date",
-        zone,
-    }
-    missing_columns = required_columns.difference(df.columns)
-
-    if missing_columns:
-        raise ValueError(
-            "Missing required station column(s): "
-            f"{', '.join(sorted(missing_columns))}"
-        )
 
     if season_name not in season_dict:
         raise ValueError(
@@ -1198,12 +1154,12 @@ def plot_monthly_interannual_variability(
         fontsize=10,
         fontweight="bold",
     )
-    set_scientific_title(
+    set_title(
         ax1,
         text["interannual_title"],
         fontsize=12,
     )
-    style_scientific_grid(ax1)
+    set_grid(ax1)
 
     selected_months = season_dict[season_name]
     indices = [
@@ -1246,7 +1202,7 @@ def plot_monthly_interannual_variability(
             text["interannual_anomaly_ylabel"],
             fontsize=10,
         )
-        style_scientific_grid(ax2)
+        set_grid(ax2)
 
     for axis in [
         ax1,

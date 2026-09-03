@@ -4,19 +4,19 @@ __version__ = "0.1.0"
 
 _EXPORTS = {
     "plot_precip_interannual_variability": (
-        "intervariability",
+        "interannual_variability",
         "plot_precip_interannual_variability",
     ),
     "plot_temp_interannual_variability": (
-        "intervariability",
+        "interannual_variability",
         "plot_temp_interannual_variability",
     ),
-    "read_stn_data": ("intervariability", "read_stn_data"),
-    "assign_season_year": ("intervariability", "assign_season_year"),
-    "plot_precip_map": ("spatialmap", "plot_precip_map"),
-    "plot_precip_anomaly": ("spatialmap", "plot_precip_anomaly"),
-    "plot_temp_map": ("spatialmap", "plot_temp_map"),
-    "plot_temp_anomaly": ("spatialmap", "plot_temp_anomaly"),
+    "read_stn_data": ("interannual_variability", "read_stn_data"),
+    "assign_season_year": ("interannual_variability", "assign_season_year"),
+    "plot_precip_map": ("spatial_map", "plot_precip_map"),
+    "plot_precip_anomaly": ("spatial_map", "plot_precip_anomaly"),
+    "plot_temp_map": ("spatial_map", "plot_temp_map"),
+    "plot_temp_anomaly": ("spatial_map", "plot_temp_anomaly"),
     "plot_precip_climatology_map": (
         "climatology",
         "plot_precip_climatology_map",
@@ -50,15 +50,15 @@ _EXPORTS = {
         "monitoring_stn",
         "plot_monthly_interannual_variability",
     ),
-    "plot_track_tc": ("monitor_TC", "plot_track_tc"),
-    "temporal_evolution_tc": ("monitor_TC", "temporal_evolution_tc"),
-    "plot_all_tc_season": ("monitor_TC", "plot_all_tc_season"),
+    "plot_track_tc": ("monitor_tc", "plot_track_tc"),
+    "temporal_evolution_tc": ("monitor_tc", "temporal_evolution_tc"),
+    "plot_all_tc_season": ("monitor_tc", "plot_all_tc_season"),
     "plot_map_latest_sst": (
-        "monitoringLargeScaleParam",
+        "monitoring_large_scale_param",
         "plot_map_latest_sst",
     ),
     "plot_map_latest_mslp": (
-        "monitoringLargeScaleParam",
+        "monitoring_large_scale_param",
         "plot_map_latest_mslp",
     ),
     "plot_climate_indices": (
@@ -74,18 +74,12 @@ _EXPORTS = {
     "normalize_lat_lon": ("preparation_data", "normalize_lat_lon"),
     "resolve_variable": ("preparation_data", "resolve_variable"),
     "is_precip_variable": ("preparation_data", "is_precip_variable"),
-    "apply_scientific_plot_style": (
-        "preparation_data",
-        "apply_scientific_plot_style",
-    ),
-    "set_scientific_title": ("preparation_data", "set_scientific_title"),
-    "style_scientific_grid": ("preparation_data", "style_scientific_grid"),
-    "style_cartopy_gridlines": (
-        "preparation_data",
-        "style_cartopy_gridlines",
-    ),
-    "annual_trend": ("annualAnalysis", "annual_trend"),
-    "disaster_impact": ("disasterAnalysis", "disaster_impact"),
+    "set_plot_defaults": ("preparation_data", "set_plot_defaults"),
+    "set_title": ("preparation_data", "set_title"),
+    "set_grid": ("preparation_data", "set_grid"),
+    "set_map_grid": ("preparation_data", "set_map_grid"),
+    "annual_trend": ("annual_analysis", "annual_trend"),
+    "disaster_impact": ("disaster_analysis", "disaster_impact"),
     "plot_disaster_impact": ("plot_disaster_impact", "plot_disaster_impact"),
 }
 
