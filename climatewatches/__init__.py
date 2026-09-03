@@ -84,6 +84,9 @@ _EXPORTS = {
         "preparation_data",
         "style_cartopy_gridlines",
     ),
+    "annual_trend": ("annualAnalysis", "annual_trend"),
+    "disaster_impact": ("disasterAnalysis", "disaster_impact"),
+    "plot_disaster_impact": ("plot_disaster_impact", "plot_disaster_impact"),
 }
 
 __all__ = sorted(_EXPORTS)
