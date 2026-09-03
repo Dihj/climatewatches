@@ -4,14 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "climatewatches"
-version = "0.1.0"
-description = "Climate data monitoring and visualization"
+version = "1.0.0"
+description = "Climate data monitoring and visualization for temporal and spatial dataset"
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.10"
 authors = [
-    {name = "Climate Watches contributors"}
+    {name = "Andriamihaja R.", emamil = "andriamihajaranaivoson@yahoo.fr"}
 ]
-keywords = ["climate", "meteorology", "rainfall", "temperature", "cyclone"]
+keywords = ["climate", "meteorology", "rainfall", "temperature", "cyclone", "climatewatches"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
@@ -34,8 +35,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ClimateWatches/climatewatches"
-Issues = "https://github.com/ClimateWatches/climatewatches/issues"
+Homepage = "https://github.com/Dihj/climatewatches"
+Repository = "https://github.com/Dihj/climatewatches"
+Issues = "https://github.com/Dihj/climatewatches/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
