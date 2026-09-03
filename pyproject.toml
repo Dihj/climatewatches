@@ -10,7 +10,7 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
-    {name = "Andriamihaja R.", emamil = "andriamihajaranaivoson@yahoo.fr"}
+    {name = "Andriamihaja R.", email = "andriamihajaranaivoson@yahoo.fr"}
 ]
 keywords = ["climate", "meteorology", "rainfall", "temperature", "cyclone", "climatewatches"]
 classifiers = [

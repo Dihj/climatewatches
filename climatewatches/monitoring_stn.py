@@ -151,7 +151,7 @@ TRANSLATIONS = {
         "monthly_precip": "Rotsakorana",
         "no_month_data": "Tsy misy angona hita",
         "no_month_climatology": (
-            "Tsy misy angona mahazatra hita ho an'ny 1991-2020 "
+            "Tsy misy antontan'isa hita ho an'ny 1991-2020 "
             "amin'io volana io."
         ),
         "interannual_title": (
