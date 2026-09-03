@@ -6,7 +6,7 @@ import matplotlib.gridspec as gridspec
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import geopandas as gpd
-import rioxarray  # noqa: F401 - registers the xarray ``.rio`` accessor
+import rioxarray 
 
 from matplotlib.colors import LinearSegmentedColormap
 from shapely.geometry import mapping
