@@ -289,14 +289,7 @@ def plot_map_latest_sst(
 
     print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax,
-        "sst": sst,
-        "anomaly": anom,
-        "domain_box": domain_box,
-        "output_file": output_file,
-    }
+    return None
 
 
 def plot_map_latest_mslp(
@@ -508,11 +501,4 @@ def plot_map_latest_mslp(
 
     print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax,
-        "mslp": mslp,
-        "anomaly": anom,
-        "domain_box": domain_box,
-        "output_file": output_file,
-    }
+    return None

@@ -575,7 +575,7 @@ def plot_precip_climatology_map(
         districts,
     )
 
-    fig, ax = _plot_climatology_map(
+    _plot_climatology_map(
         clim_data_masked,
         districts,
         lon,
@@ -587,14 +587,9 @@ def plot_precip_climatology_map(
         levels=15,
         show=show,
     )
+    print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax,
-        "data": clim_data_masked,
-        "unmasked_data": clim_data,
-        "output_file": output_file,
-    }
+    return None
 
 
 def plot_temperature_climatology_map(
@@ -671,7 +666,7 @@ def plot_temperature_climatology_map(
         districts,
     )
 
-    fig, ax = _plot_climatology_map(
+    _plot_climatology_map(
         clim_data_masked,
         districts,
         lon,
@@ -682,14 +677,9 @@ def plot_temperature_climatology_map(
         output_file,
         show=show,
     )
+    print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax,
-        "data": clim_data_masked,
-        "unmasked_data": clim_data,
-        "output_file": output_file,
-    }
+    return None
 
 
 def plot_climatology_spatial_mean(
@@ -890,15 +880,9 @@ def plot_climatology_spatial_mean(
         plt.show()
     else:
         plt.close(fig)
+    print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax,
-        "data": rainfall_series,
-        "below_normal": below_norm,
-        "above_normal": above_norm,
-        "output_file": output_file,
-    }
+    return None
 
 
 def plot_diagram_ombro_one_point(
@@ -1062,7 +1046,6 @@ def plot_diagram_ombro_one_point(
         index=False,
         encoding="utf-8",
     )
-    print(f"{text['csv_saved']}: {csv_file}")
 
     fig, ax = plt.subplots(
         figsize=(11, 6),
@@ -1246,14 +1229,7 @@ def plot_diagram_ombro_one_point(
 
     print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax,
-        "rain_axis": ax_rain,
-        "summary": monthly_summary,
-        "output_file": output_file,
-        "csv_file": csv_file,
-    }
+    return None
 
 
 def plot_composite_map(
@@ -1601,13 +1577,4 @@ def plot_composite_map(
 
     print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax_main,
-        "climatology": climatology,
-        "anomalies": anomalies_selected,
-        "composite": composite_mean,
-        "climatology_years": clim_valid_years,
-        "selected_years": selected_valid_years,
-        "output_file": output_file,
-    }
+    return None

@@ -59,6 +59,7 @@ TRANSLATION = {
         "temperature_label": "Température moyenne",
         "temperature_anomaly_title": "Anomalie standardisée de température",
         "temperature_anomaly_label": "Anomalie standardisée de température (σ)",
+        "saved": "Carte créée et enregistrée",
     },
     "en": {
         "cumulative_title": "Cumulative rainfall",
@@ -69,6 +70,7 @@ TRANSLATION = {
         "temperature_label": "Mean temperature",
         "temperature_anomaly_title": "Standardized temperature anomaly",
         "temperature_anomaly_label": "Standardized temperature anomaly (σ)",
+        "saved": "Map created and saved",
     },
     "mg": {
         "cumulative_title": "Rotsakorana",
@@ -79,6 +81,7 @@ TRANSLATION = {
         "temperature_label": "Maripana ankapobeny",
         "temperature_anomaly_title": "Tahan'ny fironan'ny maripana",
         "temperature_anomaly_label": "Tahan'ny fironan'ny maripana (σ)",
+        "saved": "Vita sy voatahiry ny sarintany",
     },
 }
 
@@ -219,6 +222,7 @@ def _render_aggregated_map(
     colorbar_label,
     filename,
     cmap,
+    saved_message,
 ):
     """Render the common rainfall/temperature map layout."""
 
@@ -272,8 +276,9 @@ def _render_aggregated_map(
     plt.tight_layout()
     plt.savefig(filename, dpi=300, bbox_inches="tight")
     plt.show()
+    print(f"{saved_message}: {filename}")
 
-    return data
+    return None
 
 
 def _plot_aggregated_map(
@@ -317,6 +322,7 @@ def _plot_aggregated_map(
         text[label_key],
         f"{filename_prefix}_{filename_period}.png",
         cmap,
+        text["saved"],
     )
 
 
@@ -664,6 +670,7 @@ def _render_anomaly_map(
     colorbar_label,
     filename,
     cmap,
+    saved_message,
 ):
     """Render the common standardized-anomaly map layout."""
 
@@ -714,8 +721,9 @@ def _render_anomaly_map(
     plt.tight_layout()
     plt.savefig(filename, dpi=300, bbox_inches="tight")
     plt.show()
+    print(f"{saved_message}: {filename}")
 
-    return anomaly
+    return None
 
 
 def plot_precip_anomaly(
@@ -813,6 +821,7 @@ def plot_precip_anomaly(
         text["anomaly_label"],
         filename,
         cmap_rain,
+        text["saved"],
     )
 
 
@@ -911,6 +920,7 @@ def plot_temp_anomaly(
         text["temperature_anomaly_label"],
         filename,
         cmap_temp,
+        text["saved"],
     )
 
 

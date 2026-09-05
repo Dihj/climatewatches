@@ -679,13 +679,7 @@ def plot_climate_indices(
 
     print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax1,
-        "soi_axis": ax2,
-        "indices": indices,
-        "output_file": output_file,
-    }
+    return None
 
 
 def plot_sst_map_variability(
@@ -1025,11 +1019,4 @@ def plot_sst_map_variability(
 
     print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax,
-        "mean_sst": mean_sst,
-        "anomaly_sst": anomaly_sst,
-        "selected_boxes": selected_boxes,
-        "output_file": output_file,
-    }
+    return None

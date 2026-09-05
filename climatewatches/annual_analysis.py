@@ -64,8 +64,7 @@ def annual_trend(
 
     Returns
     -------
-    pandas.DataFrame
-        Annual values used for the plot.
+    None
     """
     if smooth_year < 1:
         raise ValueError("smooth_year must be at least 1.")
@@ -186,5 +185,7 @@ def annual_trend(
         plt.show()
     else:
         plt.close(fig)
+    if output_file is not None:
+        print(f"Plot created and saved: {output_file}")
 
-    return annual_df
+    return None

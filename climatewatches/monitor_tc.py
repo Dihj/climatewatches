@@ -632,15 +632,7 @@ def plot_track_tc(
 
     print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax,
-        "crs": data_crs,
-        "data": filtered_df,
-        "map_extent": map_extent,
-        "plotted_cyclones": plotted_cyclones,
-        "output_file": output_file,
-    }
+    return None
 
 
 def temporal_evolution_tc(
@@ -891,14 +883,7 @@ def temporal_evolution_tc(
 
     print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax1,
-        "speed_axis": ax2,
-        "data": df,
-        "cyclone_name": cyclone_name,
-        "output_file": output_file,
-    }
+    return None
 
 
 def plot_all_tc_season(
@@ -1111,12 +1096,4 @@ def plot_all_tc_season(
 
     print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax,
-        "crs": data_crs,
-        "data": filtered_df,
-        "map_extent": map_extent,
-        "plotted_cyclones": plotted_cyclones,
-        "output_file": output_file,
-    }
+    return None

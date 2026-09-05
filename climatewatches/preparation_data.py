@@ -19,6 +19,8 @@ VARIABLE_ALIASES = {
     "mslp": ("slp", "mslp", "msl", "mean_sea_level_pressure"),
 }
 
+STATION_MISSING_VALUE = -99
+
 
 def _matching_name(names, aliases):
     lower_names = {
@@ -215,6 +217,9 @@ def _read_custom_cdt_csv(file_path, value_name):
             errors="coerce",
         )
 
+        if pd.notna(value) and value == STATION_MISSING_VALUE:
+            value = float("nan")
+
         data.append(
             [
                 date_text,
@@ -259,8 +264,12 @@ def blend_stn_cdt_data(
     DATE/LAT,<latitude>
     YYYYMMDD,<value>
 
-    The output keeps the same metadata header and writes daily rows as:
-    YYYYMMDD,Rainfall,Tmin,Tmax
+    The output is a standard CSV with columns in this order:
+    Date,Tmin,Tmax,Tmean,Rainfall
+
+    ``Tmean`` is the arithmetic mean of Tmin and Tmax. If either temperature
+    value is missing, Tmean is also missing. All missing output values are
+    written as -99.
     """
 
     rain_df, lon, lat = _read_custom_cdt_csv(
@@ -309,37 +318,29 @@ def blend_stn_cdt_data(
         "DATE"
     )
 
-    with open(
-        output_file,
-        "w",
-        encoding="utf-8",
-    ) as file:
-        file.write("ID,Point\n")
-        file.write(f"LON,{lon}\n")
-        file.write(f"DATE/LAT,{lat}\n")
+    merged["Tmean"] = (
+        merged["Tmin"] + merged["Tmax"]
+    ) / 2
+    merged = merged.rename(
+        columns={"DATE": "Date"}
+    )
+    merged = merged[
+        [
+            "Date",
+            "Tmin",
+            "Tmax",
+            "Tmean",
+            "Rainfall",
+        ]
+    ]
 
-        for _, row in merged.iterrows():
-            date_text = row["DATE"].strftime(
-                "%Y%m%d"
-            )
-            rainfall = (
-                ""
-                if pd.isna(row["Rainfall"])
-                else f"{row['Rainfall']:.3f}"
-            )
-            tmin = (
-                ""
-                if pd.isna(row["Tmin"])
-                else f"{row['Tmin']:.3f}"
-            )
-            tmax = (
-                ""
-                if pd.isna(row["Tmax"])
-                else f"{row['Tmax']:.3f}"
-            )
-            file.write(
-                f"{date_text},{rainfall},{tmin},{tmax}\n"
-            )
+    merged.to_csv(
+        output_file,
+        index=False,
+        na_rep=str(STATION_MISSING_VALUE),
+        date_format="%Y%m%d",
+        float_format="%.3f",
+    )
 
     print(f"Merged file saved as: {output_file}")
 
@@ -386,8 +387,6 @@ def download_sst_mean_data(
                 end_time,
             )
         )
-
-    print(dataset)
 
     if output_file is not None:
         dataset.to_netcdf(

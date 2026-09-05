@@ -82,8 +82,7 @@ def disaster_impact(
 
     Returns
     -------
-    pandas.DataFrame
-        Aggregated values used for the plot.
+    None
     """
     group_col = _resolve_grouping_column(analysis_by)
     df = pd.read_csv(file, na_values=DEFAULT_MISSING_VALUES)
@@ -214,5 +213,7 @@ def disaster_impact(
         plt.show()
     else:
         plt.close(fig)
+    if output_file is not None:
+        print(f"Plot created and saved: {output_file}")
 
-    return grouped
+    return None

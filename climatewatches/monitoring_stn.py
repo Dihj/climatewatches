@@ -459,14 +459,7 @@ def plot_stn_temp_monitoring(
 
     print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax,
-        "current_season": current_season,
-        "recent_years": recent_years,
-        "climatology_years": climatology_years,
-        "output_file": output_file,
-    }
+    return None
 
 
 def plot_stn_precip_monitoring(
@@ -735,15 +728,7 @@ def plot_stn_precip_monitoring(
 
     print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax1,
-        "daily_axis": ax2,
-        "current_season": current_season,
-        "recent_years": recent_years,
-        "climatology_years": climatology_years,
-        "output_file": output_file,
-    }
+    return None
 
 
 def plot_stn_monthly_monitoring(
@@ -946,14 +931,7 @@ def plot_stn_monthly_monitoring(
 
     print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax1,
-        "rainfall_axis": ax2,
-        "selected_month": selected_month,
-        "selected_year": selected_year,
-        "output_file": output_file,
-    }
+    return None
 
 
 def plot_monthly_interannual_variability(
@@ -1257,11 +1235,4 @@ def plot_monthly_interannual_variability(
 
     print(f"{text['saved']}: {output_file}")
 
-    return {
-        "figure": fig,
-        "axis": ax1,
-        "anomaly_axis": ax2,
-        "seasonal_data": seasonal_data,
-        "seasonal_totals": seasonal_totals,
-        "output_file": output_file,
-    }
+    return None

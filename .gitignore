@@ -8,4 +8,5 @@ build/
 dist/
 *.egg-info/
 Process_packages.md
+Plotting_functions.md
 *.png

@@ -439,5 +439,7 @@ def plot_disaster_impact(
         plt.show()
     else:
         plt.close(fig)
+    if output_file is not None:
+        print(f"Plot created and saved: {output_file}")
 
-    return merged_df, annotated_events
+    return None

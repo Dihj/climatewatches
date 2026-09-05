@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "climatewatches"
-version = "1.0.0"
+version = "1.0.1"
 description = "Climate data monitoring and visualization for temporal and spatial dataset"
 readme = "README.md"
 license = "MIT"
@@ -23,7 +23,7 @@ dependencies = [
     "cartopy",
     "geopandas",
     "geopy",
-    "matplotlib",
+    "matplotlib>=3.8,<3.11",
     "netCDF4",
     "numpy",
     "pandas",
