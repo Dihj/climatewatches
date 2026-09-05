@@ -1,6 +1,6 @@
-"""Climate Watches plotting and data preparation tools."""
+"""ClimateWatches is a Python toolkit for climate bulletin monitoring and visualization."""
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 _EXPORTS = {
     "plot_precip_interannual_variability": (

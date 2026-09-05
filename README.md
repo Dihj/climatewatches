@@ -4,3 +4,13 @@
 visualization. It includes station monitoring plots, rainfall and temperature
 maps, climatology maps, tropical cyclone monitoring, and large-scale climate
 driver diagnostics.
+
+## Installation
+
+```bash
+pip install climatewatches
+```
+
+## Documentation
+
+See on the wiki page on this repository. 
