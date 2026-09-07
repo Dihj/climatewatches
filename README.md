@@ -13,4 +13,4 @@ pip install climatewatches
 
 ## Documentation
 
-See on the wiki page on this repository. 
+See on the wiki page here: https://github.com/Dihj/climatewatches/wiki 
